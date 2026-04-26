@@ -5,6 +5,12 @@
 #include <curl/curl.h>
 #include <cjson/cJSON.h>
 
+enum online_status{
+    OFFLINE,
+    ONLINE,
+    BUSY
+};
+
 
 struct memory {
     char *response;
@@ -67,10 +73,18 @@ int main() {
                 const cJSON *player = cJSON_GetArrayItem(players, 0);
                 const cJSON *personaname = cJSON_GetObjectItemCaseSensitive(player, "personaname");
                 const cJSON *realname = cJSON_GetObjectItemCaseSensitive(player, "realname");
+                const cJSON *personastate = cJSON_GetObjectItemCaseSensitive(player, "personastate");
                 
                 if(cJSON_IsString(personaname) && (personaname->valuestring != NULL)) {
                     printf("%s\n", personaname->valuestring);
                     printf("%s\n", realname->valuestring);
+                    if(personastate->valueint == OFFLINE) {
+                        printf("Status: Offline\n");
+                    } else if (personastate->valueint == ONLINE) {
+                        printf("Status: Online\n");
+                    } else if (personastate->valueint == BUSY) {
+                        printf("Status: Busy\n");
+                    }
                 } else {
                     printf("SLA\n");
                 }
