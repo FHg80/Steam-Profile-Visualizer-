@@ -73,11 +73,14 @@ int main() {
                 const cJSON *player = cJSON_GetArrayItem(players, 0);
                 const cJSON *personaname = cJSON_GetObjectItemCaseSensitive(player, "personaname");
                 const cJSON *realname = cJSON_GetObjectItemCaseSensitive(player, "realname");
+                const cJSON *loccountrycode = cJSON_GetObjectItemCaseSensitive(player, "loccountrycode");
                 const cJSON *personastate = cJSON_GetObjectItemCaseSensitive(player, "personastate");
                 
                 if(cJSON_IsString(personaname) && (personaname->valuestring != NULL)) {
-                    printf("%s\n", personaname->valuestring);
-                    printf("%s\n", realname->valuestring);
+                    printf("Nome do perfil: %s\n", personaname->valuestring);
+                    printf("Nome real: %s\n", realname->valuestring);
+                    printf("País: %s\n", loccountrycode->valuestring);
+
                     if(personastate->valueint == OFFLINE) {
                         printf("Status: Offline\n");
                     } else if (personastate->valueint == ONLINE) {
@@ -85,6 +88,7 @@ int main() {
                     } else if (personastate->valueint == BUSY) {
                         printf("Status: Busy\n");
                     }
+                    
                 } else {
                     printf("SLA\n");
                 }
