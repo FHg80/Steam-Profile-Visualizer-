@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 #include <curl/curl.h>
 #include <cjson/cJSON.h>
@@ -74,12 +75,20 @@ int main() {
                 const cJSON *personaname = cJSON_GetObjectItemCaseSensitive(player, "personaname");
                 const cJSON *realname = cJSON_GetObjectItemCaseSensitive(player, "realname");
                 const cJSON *loccountrycode = cJSON_GetObjectItemCaseSensitive(player, "loccountrycode");
+                const cJSON *timecreated = cJSON_GetObjectItemCaseSensitive(player, "timecreated");
                 const cJSON *personastate = cJSON_GetObjectItemCaseSensitive(player, "personastate");
+
+                char tempo[80];
+                time_t t = (time_t)timecreated->valuedouble;
+                struct tm *tm_data = localtime(&t);
+
+                strftime(tempo, sizeof(tempo), "%d/%m/%Y às %H:%M:%S", tm_data);
                 
                 if(cJSON_IsString(personaname) && (personaname->valuestring != NULL)) {
                     printf("Nome do perfil: %s\n", personaname->valuestring);
                     printf("Nome real: %s\n", realname->valuestring);
                     printf("País: %s\n", loccountrycode->valuestring);
+                    printf("Conta criada em: %s\n", tempo);
 
                     if(personastate->valueint == OFFLINE) {
                         printf("Status: Offline\n");
@@ -88,7 +97,7 @@ int main() {
                     } else if (personastate->valueint == BUSY) {
                         printf("Status: Busy\n");
                     }
-                    
+
                 } else {
                     printf("SLA\n");
                 }
