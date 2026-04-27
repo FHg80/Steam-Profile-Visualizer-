@@ -160,8 +160,22 @@ int main() {
     if(owned_games_json) {
         const cJSON *response = cJSON_GetObjectItemCaseSensitive(owned_games_json, "response");
         const cJSON *game_count = cJSON_GetObjectItemCaseSensitive(response, "game_count");
+        const cJSON *games = cJSON_GetObjectItemCaseSensitive(response, "games");
+        cJSON *game = NULL;
 
         printf("Número de jogos possuídos: %i\n", game_count->valueint);
+
+        cJSON_ArrayForEach(game, games) {
+            const cJSON *name = cJSON_GetObjectItemCaseSensitive(game, "name");
+            const cJSON *playtime_forever = cJSON_GetObjectItemCaseSensitive(game, "playtime_forever");
+
+            int horas_jogadas = playtime_forever->valueint / 60;
+
+            printf("------------------------------\n");
+            printf("Nome: %s\n", name->valuestring); 
+            printf("Total de horas jogadas: %i Hrs\n", horas_jogadas);
+
+        }
     }
 
     free(recentGamesChunk.response);
