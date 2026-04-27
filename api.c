@@ -112,22 +112,35 @@ void print_profile_level(cJSON *profile_level_json) {
 }
 
 void print_owned_games(cJSON *owned_games_json) {
-    const cJSON *response = cJSON_GetObjectItemCaseSensitive(owned_games_json, "response");
-    const cJSON *game_count = cJSON_GetObjectItemCaseSensitive(response, "game_count");
-    const cJSON *games = cJSON_GetObjectItemCaseSensitive(response, "games");
-    cJSON *game = NULL;
 
-    printf("Número de jogos possuídos: %i\n", game_count->valueint);
+    if(owned_games_json) {
+        const cJSON *response = cJSON_GetObjectItemCaseSensitive(owned_games_json, "response");
+        const cJSON *game_count = cJSON_GetObjectItemCaseSensitive(response, "game_count");
+        const cJSON *games = cJSON_GetObjectItemCaseSensitive(response, "games");
+        cJSON *game = NULL;
 
-    cJSON_ArrayForEach(game, games) {
-        const cJSON *name = cJSON_GetObjectItemCaseSensitive(game, "name");
-        const cJSON *playtime_forever = cJSON_GetObjectItemCaseSensitive(game, "playtime_forever");
+        if(cJSON_IsNumber(game_count)) {
+            printf("Número de jogos possuídos: %i\n", game_count->valueint);
 
-        int horas_jogadas = playtime_forever->valueint / 60;
+            if(game_count->valueint > 0) {
+                cJSON_ArrayForEach(game, games) {
+                    const cJSON *name = cJSON_GetObjectItemCaseSensitive(game, "name");
+                    const cJSON *playtime_forever = cJSON_GetObjectItemCaseSensitive(game, "playtime_forever");
 
-        printf("------------------------------\n");
-        printf("Nome: %s\n", name->valuestring); 
-        printf("Total de horas jogadas: %i Hrs\n", horas_jogadas);
+                    int horas_jogadas = playtime_forever->valueint / 60;
 
+                    printf("------------------------------\n");
+                    printf("Nome: %s\n", name->valuestring); 
+                    printf("Total de horas jogadas: %i Hrs\n", horas_jogadas);
+
+                }
+            }     
+        } else {
+            fprintf(stderr, "Erro com os dados: %s\n", strerror(errno));
+        }
+
+        
+    } else {
+        fprintf(stderr, "owned_games_json em falta: %s\n", strerror(errno));
     }
 }
