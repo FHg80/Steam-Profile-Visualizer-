@@ -1,48 +1,52 @@
 #include "api.h"
 
 void print_basic_profile(cJSON *basic_profile_json) {
-    const cJSON *response = cJSON_GetObjectItemCaseSensitive(basic_profile_json, "response");
-    const cJSON *players = cJSON_GetObjectItemCaseSensitive(response, "players");
-    const cJSON *player = cJSON_GetArrayItem(players, 0);
-    const cJSON *personaname = cJSON_GetObjectItemCaseSensitive(player, "personaname");
-    const cJSON *realname = cJSON_GetObjectItemCaseSensitive(player, "realname");
-    const cJSON *loccountrycode = cJSON_GetObjectItemCaseSensitive(player, "loccountrycode");
-    const cJSON *profileurl = cJSON_GetObjectItemCaseSensitive(player, "profileurl");
-    const cJSON *timecreated = cJSON_GetObjectItemCaseSensitive(player, "timecreated");
-    const cJSON *lastlogoff = cJSON_GetObjectItemCaseSensitive(player, "lastlogoff");
-    const cJSON *personastate = cJSON_GetObjectItemCaseSensitive(player, "personastate");
+    if(basic_profile_json) {
+        const cJSON *response = cJSON_GetObjectItemCaseSensitive(basic_profile_json, "response");
+        const cJSON *players = cJSON_GetObjectItemCaseSensitive(response, "players");
+        const cJSON *player = cJSON_GetArrayItem(players, 0);
+        const cJSON *personaname = cJSON_GetObjectItemCaseSensitive(player, "personaname");
+        const cJSON *realname = cJSON_GetObjectItemCaseSensitive(player, "realname");
+        const cJSON *loccountrycode = cJSON_GetObjectItemCaseSensitive(player, "loccountrycode");
+        const cJSON *profileurl = cJSON_GetObjectItemCaseSensitive(player, "profileurl");
+        const cJSON *timecreated = cJSON_GetObjectItemCaseSensitive(player, "timecreated");
+        const cJSON *lastlogoff = cJSON_GetObjectItemCaseSensitive(player, "lastlogoff");
+        const cJSON *personastate = cJSON_GetObjectItemCaseSensitive(player, "personastate");
 
-    char tempo_criacao[80];
-    char tempo_logoff[80];
+        char tempo_criacao[80];
+        char tempo_logoff[80];
 
-    time_t t_creation = (time_t)timecreated->valuedouble;
-    struct tm *tm_data_creation = localtime(&t_creation);
-    strftime(tempo_criacao, sizeof(tempo_criacao), "%d/%m/%Y às %H:%M:%S", tm_data_creation);
+        time_t t_creation = (time_t)timecreated->valuedouble;
+        struct tm *tm_data_creation = localtime(&t_creation);
+        strftime(tempo_criacao, sizeof(tempo_criacao), "%d/%m/%Y às %H:%M:%S", tm_data_creation);
 
-    time_t t_logoff = (time_t)lastlogoff->valuedouble;
-    struct tm *tm_data_logoff = localtime(&t_logoff);
-    strftime(tempo_logoff, sizeof(tempo_logoff), "%d/%m/%Y às %H:%M:%S", tm_data_logoff);
+        time_t t_logoff = (time_t)lastlogoff->valuedouble;
+        struct tm *tm_data_logoff = localtime(&t_logoff);
+        strftime(tempo_logoff, sizeof(tempo_logoff), "%d/%m/%Y às %H:%M:%S", tm_data_logoff);
 
-    if(cJSON_IsString(personaname) && (personaname->valuestring != NULL)) {
-        printf("Nome do perfil: %s\n", personaname->valuestring);
-        printf("Nome real: %s\n", realname->valuestring);
-        printf("País: %s\n", loccountrycode->valuestring);
-        printf("URL do perfil: %s\n", profileurl->valuestring);
-        printf("Último login em: %s\n", tempo_logoff);
-        printf("Conta criada em: %s\n", tempo_criacao);
+        if(cJSON_IsString(personaname) && (personaname->valuestring != NULL)) {
+            printf("Nome do perfil: %s\n", personaname->valuestring);
+            printf("Nome real: %s\n", realname->valuestring);
+            printf("País: %s\n", loccountrycode->valuestring);
+            printf("URL do perfil: %s\n", profileurl->valuestring);
+            printf("Último login em: %s\n", tempo_logoff);
+            printf("Conta criada em: %s\n", tempo_criacao);
 
-        if(personastate->valueint == OFFLINE) {
-            printf("Status: Offline\n");
-        } else if (personastate->valueint == ONLINE) {
-            printf("Status: Online\n");
-        } else if (personastate->valueint == BUSY) {
-            printf("Status: Busy\n");
+            if(personastate->valueint == OFFLINE) {
+                printf("Status: Offline\n");
+            } else if (personastate->valueint == ONLINE) {
+                printf("Status: Online\n");
+            } else if (personastate->valueint == BUSY) {
+                printf("Status: Busy\n");
+            }
+
+        } else {
+            printf("SLA\n");
         }
-
-    } else {
-        printf("SLA\n");
-    }
-    cJSON_Delete(basic_profile_json);
+            cJSON_Delete(basic_profile_json);
+        } else {
+            fprintf(stderr, "basic_profile_json em falta: %s\n", strerror(errno));
+        }   
 }
 
 void print_recent_games(cJSON *recent_games_json) {
