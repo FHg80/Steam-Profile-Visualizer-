@@ -24,7 +24,14 @@ void print_basic_profile(cJSON *basic_profile_json) {
         struct tm *tm_data_logoff = localtime(&t_logoff);
         strftime(tempo_logoff, sizeof(tempo_logoff), "%d/%m/%Y às %H:%M:%S", tm_data_logoff);
 
-        if(cJSON_IsString(personaname) && (personaname->valuestring != NULL)) {
+        if(cJSON_IsString(personaname) && (personaname->valuestring != NULL)
+            && cJSON_IsString(realname) && (realname->valuestring != NULL)
+            && cJSON_IsString(loccountrycode) && (loccountrycode->valuestring != NULL)
+            && cJSON_IsString(profileurl) && (profileurl->valuestring != NULL)
+            && cJSON_IsNumber(timecreated) && (timecreated->valuedouble != 0)
+            && cJSON_IsNumber(lastlogoff) && (lastlogoff->valuedouble != 0)
+            && cJSON_IsNumber(personastate) && (0 <= personastate->valueint <= 0)) {
+
             printf("Nome do perfil: %s\n", personaname->valuestring);
             printf("Nome real: %s\n", realname->valuestring);
             printf("País: %s\n", loccountrycode->valuestring);
@@ -41,7 +48,7 @@ void print_basic_profile(cJSON *basic_profile_json) {
             }
 
         } else {
-            printf("SLA\n");
+            fprintf(stderr, "Erro com os dados: %s\n", strerror(errno));
         }
             cJSON_Delete(basic_profile_json);
         } else {
