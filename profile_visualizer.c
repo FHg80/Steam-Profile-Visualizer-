@@ -163,6 +163,14 @@ int main() {
         }
     }
 
+    if(profile_level_json) {
+        const cJSON *response = cJSON_GetObjectItemCaseSensitive(profile_level_json, "response");
+        const cJSON *player_level = cJSON_GetObjectItemCaseSensitive(response, "player_level");
+
+        printf("------------------------------\n");
+        printf("Nível do perfil: %i\n", player_level->valueint);
+    }
+
     if(owned_games_json) {
         const cJSON *response = cJSON_GetObjectItemCaseSensitive(owned_games_json, "response");
         const cJSON *game_count = cJSON_GetObjectItemCaseSensitive(response, "game_count");
@@ -182,14 +190,6 @@ int main() {
             printf("Total de horas jogadas: %i Hrs\n", horas_jogadas);
 
         }
-    }
-
-    if(profile_level_json) {
-        const cJSON *response = cJSON_GetObjectItemCaseSensitive(profile_level_json, "response");
-        const cJSON *player_level = cJSON_GetObjectItemCaseSensitive(response, "player_level");
-
-        printf("------------------------------\n");
-        printf("Nível do perfil: %i\n", player_level->valueint);
     }
 
     free(recentGamesChunk.response);
