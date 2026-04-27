@@ -60,15 +60,22 @@ int main() {
     steamid[strcspn(steamid, "\n")] = '\0';
 
     char basic_profile_url[256];
+    char recent_games_url[256];
 
     snprintf(basic_profile_url, sizeof(basic_profile_url), "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=%s&steamids=%s",
+    api_key, steamid);
+
+    snprintf(recent_games_url, sizeof(recent_games_url), "https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=%s&steamid=%s",
     api_key, steamid);
 
     curl_global_init(CURL_GLOBAL_ALL);
     CURL *handle =  curl_easy_init();
 
     struct memory profileChunk = fetch_url(handle, basic_profile_url);
+    struct memory recentGamesChunk = fetch_url(handle, recent_games_url);
+
     cJSON *basic_profile_json = cJSON_Parse(profileChunk.response);
+    cJSON *recent_games_json = cJSON_Parse(recentGamesChunk.response);
 
     if(basic_profile_json) {
         const cJSON *response = cJSON_GetObjectItemCaseSensitive(basic_profile_json, "response");
@@ -117,7 +124,23 @@ int main() {
         printf("Deu pra parsear n.\n");
     }
 
-        free(profileChunk.response);
+    if(recent_games_json) {
+        const cJSON *response = cJSON_GetObjectItemCaseSensitive(recent_games_json, "response");
+        const cJSON *total_count = cJSON_GetObjectItemCaseSensitive(response, "total_count");
+        const cJSON *games = cJSON_GetObjectItemCaseSensitive(response, "games");
+        cJSON *game = NULL;
+
+        if(cJSON_IsNumber(total_count)) {
+            printf("Número de jogos jogados recentemente: %i\n", total_count->valueint);
+        }
+
+        cJSON_ArrayForEach(game, games) {
+            const cJSON *game_name = cJSON_GetObjectItemCaseSensitive(game, "name");
+            printf("%s\n", game_name->valuestring);
+        }
+    }
+
+    free(profileChunk.response);
 
     curl_easy_cleanup(handle);
     
