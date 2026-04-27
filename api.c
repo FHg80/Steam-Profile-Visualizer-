@@ -50,7 +50,7 @@ void print_basic_profile(cJSON *basic_profile_json) {
         } else {
             fprintf(stderr, "Erro com os dados: %s\n", strerror(errno));
         }
-            cJSON_Delete(basic_profile_json);
+
         } else {
             fprintf(stderr, "basic_profile_json em falta: %s\n", strerror(errno));
         }   
@@ -88,7 +88,7 @@ void print_recent_games(cJSON *recent_games_json) {
                 fprintf(stderr, "Erro com os dados: %s\n", strerror(errno));
             }   
         }
-        cJSON_Delete(recent_games_json);
+        
     } else {
         fprintf(stderr, "recent_games_json em falta: %s\n", strerror(errno));
     }

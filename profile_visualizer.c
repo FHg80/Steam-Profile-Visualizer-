@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <ctype.h>
+#include <stdbool.h>
 
 #include <curl/curl.h>
 #include <cjson/cJSON.h>
@@ -19,10 +21,17 @@ int main() {
     }
 
     char steamid[18];
+    int option = 0;
 
     printf("Insira o steamID:");
     fgets(steamid, sizeof(steamid), stdin);
     steamid[strcspn(steamid, "\n")] = '\0';
+
+    printf("------------------------------\n");
+    printf("Digite 1 para ver o perfil básico.\n");
+    printf("Digite 2 para ver os jogos jogados recentemente.\n");
+    printf("Digite 3 para ver o nível do perfil.\n");
+    printf("Digite 4 para ver todos os jogos comprados.\n");
 
     char basic_profile_url[256];
     char recent_games_url[256];
@@ -54,15 +63,45 @@ int main() {
     cJSON *profile_level_json = cJSON_Parse(levelChunk.response);
     cJSON *owned_games_json = cJSON_Parse(ownedGamesChunk.response);
 
-    print_basic_profile(basic_profile_json);
-    print_recent_games(recent_games_json);
-    print_profile_level(profile_level_json);
-    print_owned_games(owned_games_json);
+    while(true) {
+        
+        scanf("%i", &option);
+        
+        if(option >= 1 && option <= 9) {
+            switch (option) {
+                case 1:
+                    print_basic_profile(basic_profile_json);
+                    break;
+                case 2: 
+                    print_recent_games(recent_games_json);
+                    break;
+                case 3:
+                    print_profile_level(profile_level_json);
+                    break;
+                case 4:
+                    print_owned_games(owned_games_json);
+                    break;
+                default:
+                    return 0;
+            }
+        } else {
+            printf("Digite um número válido entre 1 e 9:");
+        }
+    }
+    
+    
+    
+    
 
     free(recentGamesChunk.response);
     free(profileChunk.response);
     free(ownedGamesChunk.response);
     free(levelChunk.response);
+
+    cJSON_Delete(basic_profile_json);
+    cJSON_Delete(recent_games_json);
+    cJSON_Delete(profile_level_json);
+    cJSON_Delete(owned_games_json);
 
     curl_easy_cleanup(handle);
     
