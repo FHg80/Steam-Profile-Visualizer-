@@ -140,6 +140,7 @@ int main() {
         }
     }
 
+    free(recentGamesChunk.response);
     free(profileChunk.response);
 
     curl_easy_cleanup(handle);
