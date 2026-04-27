@@ -95,11 +95,20 @@ void print_recent_games(cJSON *recent_games_json) {
 }
 
 void print_profile_level(cJSON *profile_level_json) {
-    const cJSON *response = cJSON_GetObjectItemCaseSensitive(profile_level_json, "response");
-    const cJSON *player_level = cJSON_GetObjectItemCaseSensitive(response, "player_level");
 
-    printf("------------------------------\n");
-    printf("Nível do perfil: %i\n", player_level->valueint);
+    if(profile_level_json) {
+        const cJSON *response = cJSON_GetObjectItemCaseSensitive(profile_level_json, "response");
+        const cJSON *player_level = cJSON_GetObjectItemCaseSensitive(response, "player_level");
+
+        if(cJSON_IsNumber(player_level) && (player_level->valueint != 0)) {
+            printf("------------------------------\n");
+            printf("Nível do perfil: %i\n", player_level->valueint);
+        } else {
+            fprintf(stderr, "Erro com os dados: %s\n", strerror(errno));
+        } 
+    } else {
+        fprintf(stderr, "profile_level_json em falta: %s\n", strerror(errno));
+    }
 }
 
 void print_owned_games(cJSON *owned_games_json) {
