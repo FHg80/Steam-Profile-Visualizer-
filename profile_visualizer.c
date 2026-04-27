@@ -133,16 +133,21 @@ int main() {
         if(cJSON_IsNumber(total_count)) {
             printf("------------------------------\n");
             printf("Número de jogos jogados recentemente: %i\n", total_count->valueint);
+            printf("------------------------------\n");
         }
 
         cJSON_ArrayForEach(game, games) {
             const cJSON *game_name = cJSON_GetObjectItemCaseSensitive(game, "name");
             const cJSON *playtime_forever = cJSON_GetObjectItemCaseSensitive(game, "playtime_forever");
+            const cJSON *playtime_2weeks = cJSON_GetObjectItemCaseSensitive(game, "playtime_2weeks");
 
-            int horas_jogadas = playtime_forever->valueint / 60;
+            int horas_jogadas_totais = playtime_forever->valueint / 60;
+            int horas_jogadas_2semanas = playtime_2weeks->valueint / 60;
 
             printf("Nome do Jogo: %s\n", game_name->valuestring);
-            printf("Tempo jogado: %i Hrs\n", horas_jogadas);
+            printf("Tempo jogado total: %i Hrs\n", horas_jogadas_totais);
+            printf("Tempo jogado nas últimas 2 semanas: %i Hrs\n", horas_jogadas_2semanas);
+            printf("------------------------------\n");
         }
     }
 
