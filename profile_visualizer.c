@@ -9,6 +9,7 @@
 
 #include "http.h"
 #include "api.h"
+#include "menu.h"
 
 int main() {
 
@@ -26,12 +27,7 @@ int main() {
     fgets(steamid, sizeof(steamid), stdin);
     steamid[strcspn(steamid, "\n")] = '\0';
 
-    printf("------------------------------\n");
-    printf("Digite 1 para ver o perfil básico.\n");
-    printf("Digite 2 para ver os jogos jogados recentemente.\n");
-    printf("Digite 3 para ver o nível do perfil.\n");
-    printf("Digite 4 para ver todos os jogos comprados.\n");
-    printf("Digite 5 para ver a lista de amigos.\n");
+    show_menu();
 
     char basic_profile_url[256];
     char recent_games_url[256];
@@ -78,23 +74,29 @@ int main() {
             switch (option) {
                 case 1:
                     print_basic_profile(basic_profile_json);
+                    show_menu();
                     break;
                 case 2: 
                     print_recent_games(recent_games_json);
+                    show_menu();
                     break;
                 case 3:
                     print_profile_level(profile_level_json);
+                    show_menu();
                     break;
                 case 4:
                     print_owned_games(owned_games_json);
+                    show_menu();
                     break;
                 case 5: 
                     print_friends_list(friends_list_json, handle, api_key);
+                    show_menu();
                     break;
                 default:
                     return 0;
             }
         } else {
+            show_menu();
             printf("Digite um número válido entre 1 e 9:");
         }
     }
