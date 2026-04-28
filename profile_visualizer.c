@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <ctype.h>
 #include <stdbool.h>
 
 #include <curl/curl.h>
@@ -32,11 +31,13 @@ int main() {
     printf("Digite 2 para ver os jogos jogados recentemente.\n");
     printf("Digite 3 para ver o nível do perfil.\n");
     printf("Digite 4 para ver todos os jogos comprados.\n");
+    printf("Digite 5 para ver a lista de amigos.\n");
 
     char basic_profile_url[256];
     char recent_games_url[256];
     char games_owned_url[256];
     char steam_level_url[256];
+    char friends_list_url[256];
 
     snprintf(basic_profile_url, sizeof(basic_profile_url), "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=%s&steamids=%s",
     api_key, steamid);
@@ -50,6 +51,9 @@ int main() {
     snprintf(steam_level_url, sizeof(steam_level_url), "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=%s&steamid=%s",
     api_key, steamid);
 
+    snprintf(friends_list_url, sizeof(friends_list_url), "https://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=%s&steamid=%s&relationship=friend",
+    api_key, steamid);
+
     curl_global_init(CURL_GLOBAL_ALL);
     CURL *handle =  curl_easy_init();
 
@@ -57,11 +61,14 @@ int main() {
     struct memory recentGamesChunk = fetch_url(handle, recent_games_url);
     struct memory ownedGamesChunk = fetch_url(handle, games_owned_url);
     struct memory levelChunk = fetch_url(handle, steam_level_url);
+    struct memory friendsChunk = fetch_url(handle, friends_list_url);
 
     cJSON *basic_profile_json = cJSON_Parse(profileChunk.response);
     cJSON *recent_games_json = cJSON_Parse(recentGamesChunk.response);
     cJSON *profile_level_json = cJSON_Parse(levelChunk.response);
     cJSON *owned_games_json = cJSON_Parse(ownedGamesChunk.response);
+    cJSON *friends_list_json = cJSON_Parse(friendsChunk.response);
+
 
     while(true) {
         
@@ -81,6 +88,9 @@ int main() {
                 case 4:
                     print_owned_games(owned_games_json);
                     break;
+                case 5: 
+                    print_friends_list(friends_list_json, handle, api_key);
+                    break;
                 default:
                     return 0;
             }
@@ -89,10 +99,6 @@ int main() {
         }
     }
     
-    
-    
-    
-
     free(recentGamesChunk.response);
     free(profileChunk.response);
     free(ownedGamesChunk.response);

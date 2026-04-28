@@ -1,4 +1,5 @@
 #include "api.h"
+#include "http.h"
 
 void print_basic_profile(cJSON *basic_profile_json) {
     if(basic_profile_json) {
@@ -143,4 +144,41 @@ void print_owned_games(cJSON *owned_games_json) {
     } else {
         fprintf(stderr, "owned_games_json em falta: %s\n", strerror(errno));
     }
+}
+
+void print_friends_list(cJSON *friends_list_json, CURL *handle, const char *api_key) {
+    const cJSON *friends_list = cJSON_GetObjectItemCaseSensitive(friends_list_json, "friendslist");
+    const cJSON *friends = cJSON_GetObjectItemCaseSensitive(friends_list, "friends");
+    cJSON *friend = NULL;
+    char basic_profile_url[256];
+
+    cJSON_ArrayForEach(friend, friends) {
+        const cJSON *steamid = cJSON_GetObjectItemCaseSensitive(friend, "steamid");
+        const cJSON *friend_since = cJSON_GetObjectItemCaseSensitive(friend, "friend_since");
+
+        snprintf(basic_profile_url, sizeof(basic_profile_url), "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=%s&steamids=%s",
+        api_key, steamid->valuestring);
+
+        struct memory profileChunk = fetch_url(handle, basic_profile_url);
+        cJSON *basic_profile_json = cJSON_Parse(profileChunk.response);
+
+        const cJSON *response = cJSON_GetObjectItemCaseSensitive(basic_profile_json, "response");
+        const cJSON *players = cJSON_GetObjectItemCaseSensitive(response, "players");
+        const cJSON *player = cJSON_GetArrayItem(players, 0);
+        const cJSON *personaname = cJSON_GetObjectItemCaseSensitive(player, "personaname");
+
+        char friend_time[80];
+
+        time_t t_friends = (time_t)friend_since->valuedouble;
+        struct tm *tm_data_friend = localtime(&t_friends);
+        strftime(friend_time, sizeof(friend_time), "%d/%m/%Y às %H:%M:%S", tm_data_friend);
+
+        printf("Nome: %s\n", personaname->valuestring);
+        printf("Amigos desde: %s\n", friend_time);
+
+        free(profileChunk.response);
+        cJSON_Delete(basic_profile_json);
+
+    }
+
 }
