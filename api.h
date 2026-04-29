@@ -8,10 +8,18 @@
 #include <cjson/cJSON.h>
 #include <curl/curl.h>
 
-enum online_status{
+enum online_status {
     OFFLINE,
     ONLINE,
     BUSY
+};
+
+enum urls {
+    BASIC_PROFILE,
+    RECENT_GAMES,
+    GAMES_OWNED,
+    STEAM_LEVEL,
+    FRIENDS_LIST
 };
 
 void print_basic_profile(cJSON *basic_profile_json);
@@ -19,4 +27,7 @@ void print_recent_games(cJSON *recent_games_json);
 void print_profile_level(cJSON *profile_level_json);
 void print_owned_games(cJSON *owned_games_json);
 void print_friends_list(cJSON *friends_list_json, CURL *handle, const char *api_key);
+
+char** define_urls(char *steamid, const char *api_key); 
+
 cJSON *profile_name(CURL *handle, const char *api_key, const char *steamid);

@@ -23,41 +23,23 @@ int main() {
     char steamid[18];
     int option = 0;
 
+
     printf("Insira o steamID:");
     fgets(steamid, sizeof(steamid), stdin);
     steamid[strcspn(steamid, "\n")] = '\0';
 
     show_menu();
 
-    char basic_profile_url[256];
-    char recent_games_url[256];
-    char games_owned_url[256];
-    char steam_level_url[256];
-    char friends_list_url[256];
-
-    snprintf(basic_profile_url, sizeof(basic_profile_url), "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=%s&steamids=%s",
-    api_key, steamid);
-
-    snprintf(recent_games_url, sizeof(recent_games_url), "https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=%s&steamid=%s",
-    api_key, steamid);
-
-    snprintf(games_owned_url, sizeof(games_owned_url), "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&steamid=%s&include_appinfo=true",
-    api_key, steamid);
-
-    snprintf(steam_level_url, sizeof(steam_level_url), "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=%s&steamid=%s",
-    api_key, steamid);
-
-    snprintf(friends_list_url, sizeof(friends_list_url), "https://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=%s&steamid=%s&relationship=friend",
-    api_key, steamid);
+    char** urls_array = define_urls(steamid, api_key);
 
     curl_global_init(CURL_GLOBAL_ALL);
     CURL *handle =  curl_easy_init();
 
-    struct memory profileChunk = fetch_url(handle, basic_profile_url);
-    struct memory recentGamesChunk = fetch_url(handle, recent_games_url);
-    struct memory ownedGamesChunk = fetch_url(handle, games_owned_url);
-    struct memory levelChunk = fetch_url(handle, steam_level_url);
-    struct memory friendsChunk = fetch_url(handle, friends_list_url);
+    struct memory profileChunk = fetch_url(handle, urls_array[BASIC_PROFILE]);
+    struct memory recentGamesChunk = fetch_url(handle, urls_array[RECENT_GAMES]);
+    struct memory ownedGamesChunk = fetch_url(handle, urls_array[GAMES_OWNED]);
+    struct memory levelChunk = fetch_url(handle, urls_array[STEAM_LEVEL]);
+    struct memory friendsChunk = fetch_url(handle, urls_array[FRIENDS_LIST]);
 
     cJSON *basic_profile_json = cJSON_Parse(profileChunk.response);
     cJSON *recent_games_json = cJSON_Parse(recentGamesChunk.response);

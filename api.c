@@ -192,3 +192,31 @@ cJSON *profile_name(CURL *handle, const char *api_key, const char *steamid) {
     return personaname;
 
 }
+
+char** define_urls(char *steamid, const char *api_key) {
+
+    size_t size_url = 256;
+
+    char** urls_array = malloc(5 * sizeof(char*));
+
+    for(int i = 0; i < 5; i++) {
+        urls_array[i] = malloc(256 * sizeof(char));
+    }
+
+    snprintf(urls_array[BASIC_PROFILE], size_url, "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=%s&steamids=%s",
+    api_key, steamid);
+
+    snprintf( urls_array[RECENT_GAMES], size_url, "https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=%s&steamid=%s",
+    api_key, steamid);
+
+    snprintf(urls_array[GAMES_OWNED], size_url, "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&steamid=%s&include_appinfo=true",
+    api_key, steamid);
+
+    snprintf(urls_array[STEAM_LEVEL], size_url, "https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=%s&steamid=%s",
+    api_key, steamid);
+
+    snprintf(urls_array[FRIENDS_LIST], size_url, "https://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=%s&steamid=%s&relationship=friend",
+    api_key, steamid);
+
+    return urls_array;
+}
