@@ -52,7 +52,7 @@ int main() {
         
         scanf("%i", &option);
         
-        if(option >= 1 && option <= 9) {
+        if(option >= 1 && option <= 5) {
             switch (option) {
                 case 1:
                     print_basic_profile(basic_profile_json);
@@ -79,7 +79,7 @@ int main() {
             }
         } else {
             show_menu();
-            printf("Digite um número válido entre 1 e 9:");
+            printf("Digite um número válido entre 1 e 5:");
         }
     }
     
